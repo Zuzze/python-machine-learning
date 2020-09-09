@@ -72,3 +72,7 @@ X_scaled = scale(X)
 `df = pd.read_csv('dataset_name.csv')`
 
 
+## Unsupervised learning
+
+- `Single linkage` In single linkage, the distance between clusters is the distance between the closest points of the clusters.
+- `Complete linkage` In complete linkage, the distance between clusters is the distance between the furthest points of the cluster
