@@ -35,3 +35,4 @@ centroids_y = centroids[:,1]
 # Make a scatter plot of centroids_x and centroids_y
 plt.scatter(centroids_x, centroids_y, marker='D', s=50)
 plt.show()
+
