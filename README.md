@@ -404,39 +404,49 @@ knn_unscaled.score(X_test, y_test)
 
 ## 3 Unsupervised Learning
 
-### Bias-variance trade-off
+- Supervised learning finds patterns for a prediction task whereas unsupervised learning finds patterns in data without specific prediction task in mind
+- **Dimension** = Number of features
+- When dimension too high to visualize, unsupervised learning gives insight
 
-Bias is when the models fails to capture a relationship between the data and the response, resulting in high training and testing errors.
+#### 3.1 Glossary
 
-`ridge = Ridge(alpha=0.5, normalize=True)`
-`lasso = Lasso(alpha=0.5, normalize=True)`
+##### K-means clustering
 
-### Import
-
-**Library**
-`import pandas as pd`
-`from sklearn.linear_model import Ridge`
-`from sklearn.model_selection import cross_val_score`
-
-**dataframe (CSV)**
-`df = pd.read_csv('dataset_name.csv')`
-
-## Unsupervised learning
-
-- `describe()` dataframe method that will help you extract statistical summaries of your numeric columns
-- `K-Means Clustering` K-means clustering groups data into relatively distinct groups by using a pre-determined number of clusters and iterating cluster assignments.
+- `k-means clustering` groups data into relatively distinct groups (clusters) by using a pre-determined number of clusters and iterating cluster assignments.
 
 ```
-from scipy.cluster.vq import kmeans, vq
+from sklearn.cluster import KMeans
 
-KMeans(
-kmeans(
-	df[['x_scaled', 'y_scaled']],
-	2
-)
+model = KMeans(n_clusters=3)
+model.fit(samples)
+KMeans(algorithm='auto', ...)
+labels = model.predict(samples)
 ```
+
+- `Inertia` measures clustering quality, the lower the better
+
+##### Hierarchical Clustering
+
+- `Hierarchical clustering` each element begins as a separate cluster, At each step, the two closest clusters are merged (agglomerative hierarchical clustering). Can be visualised with dendrogram.
+- `Single linkage` In single linkage, the distance between clusters is the distance between the closest points of the clusters.
+- `Complete linkage` In complete linkage, the distance between clusters is the distance between the furthest points of the cluster
+
+##### t-SNE for 2-dimensional map
+
+- t-distributed stochastic neighbor embedding
+- Maps samples to 2D space (or 3D)
+- Map approximately preserves nearness of samples
+- Different every time
+
+##### Principal Component Analysis
 
 - `Principal Component Analysis (PCA)` PCA summarizes the original dataset to one with fewer variables, called principal components, that are combinations of the original variables.
+- More efficient storage and computation
+- Remove less-informative "noise" features
+- aligns data with axes
+- `Pearson correlation` = Measures linear correlation of features, value between -1 and 1, value 0 = no correlation
+- `Principal components` = directions of variance
+- `Intrinsic dimension` = number of features needed to approximate the dataset, can be detected with PCA
 
   ```
     from sklearn.decomposition import PCA
@@ -448,5 +458,31 @@ kmeans(
     print(pca_features.shape)
   ```
 
-- `Single linkage` In single linkage, the distance between clusters is the distance between the closest points of the clusters.
-- `Complete linkage` In complete linkage, the distance between clusters is the distance between the furthest points of the cluster
+##### Non-negative matrix factorization (NMF)
+
+- Dimension reduction technique
+- NMF models are interpretable (unlike PCA)
+- All sample features must be non-negative (>= 0)
+- Must specify number of components e.g. NMF(n_components=2)
+
+```
+from sklearn.decomposition import NMF
+model = NMF(n_components=2)
+```
+
+##### Cosine similarity
+
+- Used in recommendation systems to recommend similar articles/songs/etc
+- similar elements have similar NMF feature values
+- Calculated as the angle between the lines
+- Higher values means more similar
+- Maximum value is 1, when angle is 0 ̊
+- `Bias-variance trade-off`
+
+##### Bias
+
+is when the models fails to capture a relationship between the data and the response, resulting in high training and testing errors.
+
+###### describe()
+
+dataframe method that will help you extract statistical summaries of your numeric columns
