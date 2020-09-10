@@ -52,7 +52,15 @@ to explore data use `df.keys()`, `df.info()`, `df.head()`. For Visual EDA, use f
  pd.plotting.scatter_matrix(df, c = y, figsize = [8, 8],                           s=150, marker = 'D')
 ```
 
-### 1.4 Test-train split
+## 2 :envelope: Supervised Learning
+
+- Using machine learning techniques to build predictive models For both regression and classication problems
+- Undertting and overtting
+- Test-train split
+- Cross-validation
+- Gridsearch
+
+### 2.1 Test-train split
 
 In machine learning, you often split the data you have to training data and testing data. With training data you _train_ your model and then you test how well the trained model is working by using _test_ data.
 
@@ -64,9 +72,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, rando
 
 Here `0.3` means that 30% of the original data is used for testing and 70% for training.
 
-## 2 Supervised Learning
-
-### 2.1 Classification
+### :star: 2.2 Classification
 
 Target variable consists of categories, e.g. yes/no, female/male, US/FI/CH
 
@@ -99,13 +105,14 @@ knn = KNeighborsClassifier(n_neighbors=8)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
 knn.fit(X_train, y_train)
 y_pred = knn.predict(X_test)
+print(confusion_matrix(y_test, y_pred))
 
 
 ```
 
-### 2.2 Regression
+### :star: 2.3 Regression
 
-Target variable is continuous, eg. price, height etc.
+Target variable is continuous, eg. price, height etc., but in Logistic regression output is 1 or 0.
 
 ```
 import numpy as npfrom sklearn.linear_model
@@ -125,7 +132,7 @@ plt.show()
 
 ```
 
-#### 2.2.1 Linear Regression
+#### 2.3.1 Linear Regression
 
 Linear regression minimizes a loss function and chooses a coefcient for each feature variable.
 
@@ -162,9 +169,10 @@ cv_results = cross_val_score(reg, X, y, cv=5)
 print(cv_results)
 ```
 
-#### 2.2.2 Regularized regression
+#### 2.3.2 Regularized regression
 
-In linear regression, large coefficients can lead to overfitting => Penalizing large coefficients = Regularization
+- In linear regression, large coefficients can lead to overfitting => Penalizing large coefficients = Regularization
+- Regularization helps to address the problem of over-fitting training data by restricting the model's coefficients.
 
 ##### Ridge regression
 
@@ -216,7 +224,7 @@ plt.show()
 
 ```
 
-#### 2.2.3 Logistic regression and ROC curve
+#### 2.3.3 Logistic regression
 
 - for binary classification
 - Logistic regression outputs probabilities
@@ -236,62 +244,165 @@ y_pred = logreg.predict(X_test)
 
 ```
 
-### Data preprocessing
+##### ROC Curve
 
-### Missing data
+- Receiver operating characteristic curve (ROC curve) is a graphical plot that illustrates the diagnostic ability of a binary classifier system (e.g. logistic regression) as its discrimination threshold is varied.
+- The ROC curve is created by plotting the _true positive_ rate (TPR) against the _false positive_ rate (FPR) at various threshold settings.
+
+```
+from sklearn.metrics import roc_curve
+
+y_pred_prob = logreg.predict_proba(X_test)[:,1]
+fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
+
+plt.plot([0, 1], [0, 1], 'k--')
+plt.plot(fpr, tpr, label='Logistic Regression')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Logistic Regression ROC Curve')
+plt.show();
+
+```
+
+- Larger area under the ROC curve (**AUC**) = better model
+
+```
+from sklearn.metrics import roc_auc_score
+
+logreg = LogisticRegression()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=42)
+logreg.fit(X_train, y_train)
+y_pred_prob = logreg.predict_proba(X_test)[:,1]
+roc_auc_score(y_test, y_pred_prob)
+
+```
+
+### :star: 2.4 Hyperparameter tuning
+
+- Linear regression: Choosing parameters
+- Ridge/lasso regression: Choosing alpha
+- k-Nearest Neighbors: Choosing n_neighbors
+- Parameters like alpha and k: Hyperparameters
+- Hyperparameters **_cannot be learned_** by fitting the model
+- Try different values, fit separately, use cross-validation, choose best
+
+#### 2.4.1 GridSearch Cross Validation
+
+```
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'n_neighbors': np.arange(1, 50)}
+knn = KNeighborsClassifier()
+knn_cv = GridSearchCV(knn, param_grid, cv=5)
+knn_cv.fit(X, y)
+knn_cv.best_params_
+knn_cv.best_score_
+```
+
+#### 2.4.1 Hold-out set
+
+- Using ALL data for cross-validation is not ideal
+- Split data into training and hold-out set at the beginning
+- Perform grid search cross-validation on training set
+
+### :star: 2.5 Data preprocessing
+
+#### 2.5.1 Dummy Variables
+
+Scikit-learn will not accept categorical features by default, encode categorical features numerically Convert to ‘dummy variables’
+
+- 0: Observation was NOT that category
+- 1: Observation was that category
+
+```
+import pandas as pd
+
+df = pd.read_csv('auto.csv')
+df_origin = pd.get_dummies(df)
+print(df_origin.head())
+
+# encoding to define which one to drop
+df_origin = df_origin.drop('origin_Asia', axis=1)
+
+```
+
+#### 2.5.2 Missing data
 
 When many values in your dataset are missing, if you drop them, you may end up throwing away valuable information along with the missing data. It's better instead to develop an imputation strategy. This is where domain knowledge is useful, but in the absence of it, you can impute missing values with the **mean** or the **median** of the row or column that the missing value is in.
 
-### Normalizing data
+```
+df.insulin.replace(0, np.nan, inplace=True)
 
-Scale:
+```
+
+drop missing data
+
+```
+df = df.dropna()
+df.shape(393, 9)
+```
+
+Imputing missing data: Making an educated guess about the missing values
+
+```
+from sklearn.preprocessing import Imputer
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0imp.fit(X)
+X = imp.transform(X)
+
+```
+
+Imputing within pipeline
+
+```
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import Imputer
+
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+logreg = LogisticRegression()
+steps = [('imputation', imp), ('logistic_regression', logreg)]
+pipeline = Pipeline(steps)X_train, X_test, y_train, y_test = train_test_split(X, y,    test_size=0.3, random_state=42)
+
+```
+
+#### 2.5.3 Normalizing data
+
+Features on larger scales can unduly inuence the model => We want features to be on a similar scale
+
+Ways to normalize your data:
+
+- Standardization: Subtract the mean and divide by variance
+- All features are centered around zero and have variance one
+- Can also subtract the minimum and divide by the range
+- Minimum zero and maximum one
+- Can also normalize so the data ranges from -1 to +1
 
 ```
 from sklearn.preprocessing import scale
+
 X_scaled = scale(X)
-```
-
-## Cheatsheet
-
-`EDA` exploratory data analysis
-
-### Regularization
-
-Regularization helps to address the problem of over-fitting training data by restricting the model's coefficients.
-
-### Classification
-
-### Regression
-
-#### Linear regression
+np.mean(X), np.std(X)
+np.mean(X_scaled), np.std(X_scaled)
 
 ```
-import numpy as np
-import pandas as pd
-from sklearn.linear_model import LinearRegression
 
-reg = LinearRegression()
-reg.fit(x, y)
-
-print("Regression coefficients: {}".format(reg.coef_))
-print("Regression intercept: {}".format(reg.intercept_))
-```
-
-#### Logistic regression
+CV and scaling in a pipeline
 
 ```
-from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 
-model = LogisticRegression(random_state=1)
-model.fit(X_train, y_train)
+steps = [('scaler', StandardScaler()),       (('knn', KNeighborsClassifier())]
+pipeline = Pipeline(steps)parameters = {knn__n_neighbors: np.arange(1, 50)}
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=21)
+cv = GridSearchCV(pipeline, param_grid=parameters)
+cv.fit(X_train, y_train)
+y_pred = cv.predict(X_test)
 
-y_pred = model.predict(X_test)
-model.score(X_test, y_test)
+knn_unscaled = KNeighborsClassifier().fit(X_train, y_train)
+knn_unscaled.score(X_test, y_test)
+
 ```
 
-### ROC Curve
-
-The green curve since it's the closest to the upper left side of the plot, this could be proved by calculating area under the curve
+## 3 Unsupervised Learning
 
 ### Bias-variance trade-off
 
