@@ -34,6 +34,7 @@ find patterns from unlabeled data without prediction task in mind, see whether o
 ### 1.2 Import dataset
 
 X = data (feature array)
+
 y = target (target array)
 
 ```
@@ -46,13 +47,15 @@ y = voting_data['party'].values
 
 ### 1.3 EDA = Exploratory Data Analysis
 
-to explore data use `df.keys()`, `df.info()`, `df.head()`. For Visual EDA, use for example scattrplot from Pandas:
+to explore data use `df.keys()`, `df.info()`, `df.head()`. For Visual EDA, use for example scattrplot from Pandas: `df.describe` is a dataframe method that will help you extract statistical summaries of your numeric columns.
 
 ```
  pd.plotting.scatter_matrix(df, c = y, figsize = [8, 8],                           s=150, marker = 'D')
 ```
 
-## 2 :envelope: Supervised Learning
+`Bias-variance trade-off` is when the models fails to capture a relationship between the data and the response, resulting in high training and testing errors.
+
+## :envelope: 2 Supervised Learning
 
 - Using machine learning techniques to build predictive models For both regression and classication problems
 - Undertting and overtting
@@ -402,15 +405,13 @@ knn_unscaled.score(X_test, y_test)
 
 ```
 
-## 3 Unsupervised Learning
+## :envelope: 3 Unsupervised Learning
 
 - Supervised learning finds patterns for a prediction task whereas unsupervised learning finds patterns in data without specific prediction task in mind
 - **Dimension** = Number of features
 - When dimension too high to visualize, unsupervised learning gives insight
 
-#### 3.1 Glossary
-
-##### K-means clustering
+### 3.1 K-means clustering
 
 - `k-means clustering` groups data into relatively distinct groups (clusters) by using a pre-determined number of clusters and iterating cluster assignments.
 
@@ -425,20 +426,20 @@ labels = model.predict(samples)
 
 - `Inertia` measures clustering quality, the lower the better
 
-##### Hierarchical Clustering
+### :star: 3.2 Hierarchical Clustering
 
 - `Hierarchical clustering` each element begins as a separate cluster, At each step, the two closest clusters are merged (agglomerative hierarchical clustering). Can be visualised with dendrogram.
 - `Single linkage` In single linkage, the distance between clusters is the distance between the closest points of the clusters.
 - `Complete linkage` In complete linkage, the distance between clusters is the distance between the furthest points of the cluster
 
-##### t-SNE for 2-dimensional map
+### :star: 3.3 t-SNE for 2-dimensional map
 
 - t-distributed stochastic neighbor embedding
 - Maps samples to 2D space (or 3D)
 - Map approximately preserves nearness of samples
 - Different every time
 
-##### Principal Component Analysis
+### :star: 3.4 Principal Component Analysis
 
 - `Principal Component Analysis (PCA)` PCA summarizes the original dataset to one with fewer variables, called principal components, that are combinations of the original variables.
 - More efficient storage and computation
@@ -458,7 +459,7 @@ labels = model.predict(samples)
     print(pca_features.shape)
   ```
 
-##### Non-negative matrix factorization (NMF)
+### :star: 3.5 Non-negative matrix factorization (NMF)
 
 - Dimension reduction technique
 - NMF models are interpretable (unlike PCA)
@@ -470,19 +471,10 @@ from sklearn.decomposition import NMF
 model = NMF(n_components=2)
 ```
 
-##### Cosine similarity
+#### Cosine similarity
 
 - Used in recommendation systems to recommend similar articles/songs/etc
 - similar elements have similar NMF feature values
 - Calculated as the angle between the lines
 - Higher values means more similar
 - Maximum value is 1, when angle is 0 ̊
-- `Bias-variance trade-off`
-
-##### Bias
-
-is when the models fails to capture a relationship between the data and the response, resulting in high training and testing errors.
-
-###### describe()
-
-dataframe method that will help you extract statistical summaries of your numeric columns
